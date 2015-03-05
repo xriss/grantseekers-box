@@ -253,6 +253,29 @@
 			}
 		},
 
+		parseFile: function(fileInputEl, callback) {
+			// takes a input[type="file"] and returns the data as a base64-encoded string
+			var image,
+				reader = new FileReader(),
+				onLoadEnd = function() {
+					callback(reader.result);
+				};
+
+			if (fileInputEl[0].files.length) {
+				image = fileInputEl[0].files[0];
+				var isImage = image.type.match(/^image\//);
+
+				if (isImage) {
+					reader.onloadend = onLoadEnd;
+					reader.readAsDataURL(image);
+				} else {
+					callback(null);
+				}
+			} else {
+				callback(null);
+			}
+		},
+
 		// get all the url params in a single key/value hash
 		params: function(options) {
 			var a, hash = {}, params;

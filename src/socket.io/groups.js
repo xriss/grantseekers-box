@@ -78,11 +78,17 @@ SocketGroups.accept = function(socket, data, callback) {
 		return callback(new Error('[[error:invalid-data]]'));
 	}
 
-	groups.ownership.isOwner(socket.uid, data.groupName, function(err, isOwner) {
-		if (!isOwner) {
+	var tasks = {
+			isOwner: async.apply(groups.ownership.isOwner, socket.uid, data.groupName),
+			isAdmin: async.apply(user.isAdministrator, socket.uid)
+		};
+
+	async.parallel(tasks, function(err, checks) {
+		if (!checks.isOwner && !checks.isAdmin) {
 			return callback(new Error('[[error:no-privileges]]'));
 		}
 
+		return console.log(data);
 		groups.acceptMembership(data.groupName, data.toUid, callback);
 	});
 };
@@ -92,8 +98,13 @@ SocketGroups.reject = function(socket, data, callback) {
 		return callback(new Error('[[error:invalid-data]]'));
 	}
 
-	groups.ownership.isOwner(socket.uid, data.groupName, function(err, isOwner) {
-		if (!isOwner) {
+	var tasks = {
+			isOwner: async.apply(groups.ownership.isOwner, socket.uid, data.groupName),
+			isAdmin: async.apply(user.isAdministrator, socket.uid)
+		};
+
+	async.parallel(tasks, function(err, checks) {
+		if (!checks.isOwner && !checks.isAdmin) {
 			return callback(new Error('[[error:no-privileges]]'));
 		}
 
@@ -139,7 +150,20 @@ SocketGroups.update = function(socket, data, callback) {
 			return callback(new Error('[[error:no-privileges]]'));
 		}
 
-		groups.update(data.groupName, data.values, callback);
+		groups.update(data.groupName, data.values, function() {
+			var args = arguments;
+			if (data.values.imageData) {
+				groups.updateCover({
+					imageData: data.values.imageData,
+					groupName: data.values.name,
+					position: 'center'
+				}, function() {
+					callback.apply(null, args);
+				});
+			} else {
+				callback.apply(null, args);
+			}
+		});
 	});
 };
 
