@@ -135,6 +135,9 @@ define('groups', [
 					modal.find('#pending-members').html(translatedHTML).off('click').on('click', '[data-action]', Groups.handleAcceptReject);
 				});
 			});
+		}).fail(function() {
+			// Hide the pending users tab altogether
+			modal.find('.nav li a[href="#pending"]').parent().remove();
 		});
 	};
 
