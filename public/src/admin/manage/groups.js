@@ -5,6 +5,8 @@ define('admin/manage/groups', ['groups'], function(Groups) {
 	var	ManageGroups = {};
 
 	ManageGroups.init = function() {
+		$('#create').on('click', Groups.spawnCreateForm);
+
 		// Tooltips
 		$('#groups-list .members li').tooltip();
 

@@ -7,6 +7,39 @@ define('groups', [
 ], function(iconSelect, colorpicker) {
 	var Groups = {};
 
+	Groups.spawnCreateForm = function() {
+		templates.parse('partials/groups/manage', {}, function(template) {
+			translator.translate(template, function(translatedHTML) {
+				var modal = bootbox.dialog({
+						title: 'New Group',
+						message: translatedHTML,
+						buttons: {
+							discard: {
+								label: 'Discard Changes',
+								className: 'btn-link'
+							},
+							create: {
+								label: 'Create Group',
+								className: 'btn-primary disabled',
+								callback: Groups.create
+							}
+						}
+					}),
+					saveEl = modal.find('.btn-primary'),
+					formEl = modal.find('form');
+
+				// Disable form elements unless a form value has changed
+				saveEl.prop('disabled', true).removeClass('disabled');
+				formEl.on('change', 'input', function() {
+					saveEl.prop('disabled', false);
+				});
+
+				// Form related event handlers
+				Groups.prepareSettings(formEl);
+			});
+		});
+	};
+
 	Groups.spawnManageForm = function(current) {
 		var data = {
 				current: current || {
@@ -35,13 +68,13 @@ define('groups', [
 							}
 						}
 					}),
-					updateEl = modal.find('.btn-primary'),
+					saveEl = modal.find('.btn-primary'),
 					formEl = modal.find('form');
 
 				// Disable form elements unless a form value has changed
-				updateEl.prop('disabled', true).removeClass('disabled');
+				saveEl.prop('disabled', true).removeClass('disabled');
 				formEl.on('change', 'input', function() {
-					updateEl.prop('disabled', false);
+					saveEl.prop('disabled', false);
 				});
 
 				// Add the current group's name to the modal
