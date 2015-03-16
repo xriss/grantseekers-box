@@ -45,7 +45,6 @@ module.exports = function(Meta) {
 				'bower_components/bootbox/bootbox.js',
 				'bower_components/tinycon/tinycon.js',
 				'bower_components/buzz/dist/buzz.js',
-				'bower_components/mousetrap/mousetrap.js',
 				'./node_modules/socket.io-client/socket.io.js',
 
 				// Anything before this line does not use Require.js (or if it does, isn't prepped in a way so that it can be require'd easily)

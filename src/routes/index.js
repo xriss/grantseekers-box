@@ -161,6 +161,9 @@ module.exports = function(app, middleware) {
 	app.use(relativePath, express.static(path.join(__dirname, '../../', 'public'), {
 		maxAge: app.enabled('cache') ? 5184000000 : 0
 	}));
+	app.use(relativePath + '/bower', express.static(path.join(__dirname, '../../', 'bower_components'), {
+		maxAge: app.enabled('cache') ? 5184000000 : 0
+	}));
 	app.use(relativePath + '/fonts', express.static(path.join(__dirname, '../../', 'bower_components/fontawesome/fonts'), {
 		maxAge: app.enabled('cache') ? 5184000000 : 0
 	}));

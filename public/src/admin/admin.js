@@ -61,29 +61,31 @@
 	}
 
 	function setupKeybindings() {
-		Mousetrap.bind('ctrl+shift+a r', function() {
-			console.log('[admin] Reloading NodeBB...');
-			socket.emit('admin.reload');
-		});
+		require(['mousetrap'], function(Mousetrap) {
+			Mousetrap.bind('ctrl+shift+a r', function() {
+				console.log('[admin] Reloading NodeBB...');
+				socket.emit('admin.reload');
+			});
 
-		Mousetrap.bind('ctrl+shift+a R', function() {
-			console.log('[admin] Restarting NodeBB...');
-			socket.emit('admin.restart');
-		});
+			Mousetrap.bind('ctrl+shift+a R', function() {
+				console.log('[admin] Restarting NodeBB...');
+				socket.emit('admin.restart');
+			});
 
-		Mousetrap.bind('ctrl+shift+a d', function() {
-			var tid = ajaxify.variables.get('topic_id'),
-				cid = ajaxify.variables.get('category_id');
+			Mousetrap.bind('ctrl+shift+a d', function() {
+				var tid = ajaxify.variables.get('topic_id'),
+					cid = ajaxify.variables.get('category_id');
 
-			if (tid && cid) {
-				socket.emit('topics.delete', { tids: [tid], cid: cid });
-			}
-		});
+				if (tid && cid) {
+					socket.emit('topics.delete', { tids: [tid], cid: cid });
+				}
+			});
 
-		Mousetrap.bind('/', function(e) {
-			$('#acp-search input').focus();
+			Mousetrap.bind('/', function(e) {
+				$('#acp-search input').focus();
 
-			return false;
+				return false;
+			});
 		});
 	}
 

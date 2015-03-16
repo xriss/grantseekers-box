@@ -27,15 +27,11 @@
 		<script type="text/javascript" src="{relative_path}/vendor/chart.js/chart.min.js?{cache-buster}"></script>
 		<script type="text/javascript" src="{relative_path}/vendor/hammer/hammer.min.js?{cache-buster}"></script>
 		<script type="text/javascript" src="{relative_path}/nodebb.min.js?{cache-buster}"></script>
+		<!-- IMPORT partials/requirejs-config.tpl -->
 		<script>
 			require.config({
-				baseUrl: "{relative_path}/src/modules",
-				waitSeconds: 3,
-				urlArgs: "{cache-buster}",
 				paths: {
 					'admin': '../admin',
-					'vendor': '../../vendor',
-					'buzz': '../../vendor/buzz/buzz.min'
 				}
 			});
 
@@ -50,7 +46,6 @@
 		<script type="text/javascript" src="{relative_path}/vendor/semver/semver.browser.js?{cache-buster}"></script>
 		<script type="text/javascript" src="{relative_path}/vendor/jquery/serializeObject/jquery.ba-serializeobject.min.js?{cache-buster}"></script>
 		<script type="text/javascript" src="{relative_path}/vendor/jquery/deserialize/jquery.deserialize.min.js?{cache-buster}"></script>
-		<script type="text/javascript" src="{relative_path}/vendor/mousetrap/mousetrap.js?{cache-buster}"></script>
 
 		<!-- BEGIN scripts -->
 		<script type="text/javascript" src="{scripts.src}"></script>
