@@ -29,8 +29,8 @@ module.exports = function(Meta) {
 					paths = [
 						baseThemePath,
 						path.join(__dirname, '../../node_modules'),
-						path.join(__dirname, '../../public/vendor/fontawesome/less'),
-						path.join(__dirname, '../../public/vendor/bootstrap/less')
+						path.join(__dirname, '../../bower_components/fontawesome/less'),
+						path.join(__dirname, '../../bower_components/bootstrap/less')
 					],
 					source = '@import "font-awesome";',
 					acpSource,
@@ -47,9 +47,9 @@ module.exports = function(Meta) {
 					source += '\n@import (inline) ".' + path.sep + plugins.cssFiles[x] + '";';
 				}
 
-				source += '\n@import (inline) "..' + path.sep + '..' + path.sep + 'public/vendor/jquery/css/smoothness/jquery-ui-1.10.4.custom.min.css";';
-				source += '\n@import (inline) "..' + path.sep + '..' + path.sep + 'public/vendor/jquery/bootstrap-tagsinput/bootstrap-tagsinput.css";';
-				source += '\n@import (inline) "..' + path.sep + '..' + path.sep + 'public/vendor/jquery/textcomplete/jquery.textcomplete.css";';
+				source += '\n@import (inline) "..' + path.sep + '..' + path.sep + 'bower_components/jquery.ui/themes/base/all.css";';
+				source += '\n@import (inline) "..' + path.sep + '..' + path.sep + 'bower_components/bootstrap-tagsinput/dist/bootstrap-tagsinput.css";';
+				source += '\n@import (inline) "..' + path.sep + '..' + path.sep + 'bower_components/jquery-textcomplete/dist/jquery.textcomplete.css";';
 				source += '\n@import (inline) "..' + path.sep + '..' + path.sep + 'public/vendor/colorpicker/colorpicker.css";';
 
 				acpSource = '\n@import "..' + path.sep + 'public/less/admin/admin";\n' + source;
