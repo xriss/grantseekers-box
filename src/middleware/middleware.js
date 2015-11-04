@@ -219,11 +219,7 @@ middleware.privateUploads = function(req, res, next) {
 
 middleware.busyCheck = function(req, res, next) {
 	if (toobusy()) {
-		middleware.buildHeader(req, res, function() {
-			res.render('503a', {
-				site_title: meta.config.title || 'NodeBB'
-			});
-		});
+		res.type('text/html').sendFile(path.join(__dirname, '../../public/503.html'));
 	} else {
 		next();
 	}
