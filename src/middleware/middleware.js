@@ -11,12 +11,12 @@ var app,
 	validator = require('validator'),
 	nconf = require('nconf'),
 	ensureLoggedIn = require('connect-ensure-login'),
+	toobusy = require('toobusy-js'),
 
 	plugins = require('../plugins'),
 	meta = require('../meta'),
 	user = require('../user'),
 	groups = require('../groups'),
-
 
 	analytics = require('../analytics'),
 
@@ -217,6 +217,17 @@ middleware.privateUploads = function(req, res, next) {
 	next();
 };
 
+middleware.busyCheck = function(req, res, next) {
+	if (toobusy()) {
+		middleware.buildHeader(req, res, function() {
+			res.render('503a', {
+				site_title: meta.config.title || 'NodeBB'
+			});
+		});
+	} else {
+		next();
+	}
+};
 
 module.exports = function(webserver) {
 	app = webserver;
