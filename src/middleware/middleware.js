@@ -25,6 +25,9 @@ var app,
 		helpers: require('../controllers/helpers')
 	};
 
+toobusy.maxLag(parseInt(meta.config.eventLoopLagThreshold, 10) || 70);
+toobusy.interval(parseInt(meta.config.eventLoopInterval, 10) || 500);
+
 middleware.authenticate = function(req, res, next) {
 	if (req.user) {
 		return next();
