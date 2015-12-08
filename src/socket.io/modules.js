@@ -29,6 +29,14 @@ SocketModules.chats.get = function(socket, data, callback) {
 	}, callback);
 };
 
+SocketModules.chats.getRaw = function(socket, data, callback) {
+	if(!data || !data.hasOwnProperty('mid')) {
+		return callback(new Error('[[error:invalid-data]]'));
+	}
+
+	Messaging.getMessageField(data.mid, 'content', callback);
+};
+
 SocketModules.chats.send = function(socket, data, callback) {
 	if (!data) {
 		return callback(new Error('[[error:invalid-data]]'));
@@ -59,6 +67,20 @@ SocketModules.chats.send = function(socket, data, callback) {
 
 			callback();
 		});
+	});
+};
+
+SocketModules.chats.edit = function(socket, data, callback) {
+	if (!data) {
+		return callback(new Error('[[error:invalid-data]]'));
+	}
+
+	Messaging.canEdit(data.mid, socket.uid, function(err, allowed) {
+		if (allowed) {
+			Messaging.editMessage(data.mid, data.message, callback);
+		} else {
+			return callback(new Error('[[error:cant-edit-chat-message]]'));
+		}
 	});
 };
 

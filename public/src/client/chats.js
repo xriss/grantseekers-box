@@ -97,7 +97,20 @@ define('forum/chats', ['components', 'string', 'sounds', 'forum/infinitescroll',
 		});
 		Mousetrap.bind('up', function(e) {
 			if (e.target === components.get('chat/input').get(0)) {
-				console.log('derp!');
+				// Retrieve message id from messages list
+				var message = components.get('chat/messages').find('.chat-message[data-self="1"]').last(),
+					lastMid = message.attr('data-mid'),
+					inputEl = components.get('chat/input');
+
+				socket.emit('modules.chats.getRaw', { mid: lastMid }, function(err, raw) {
+					// Populate the input field with the raw message content
+					if (inputEl.val().length === 0) {
+						// By setting the `data-mid` attribute, I tell the chat code that I am editing a
+						// message, instead of posting a new one.
+						inputEl.attr('data-mid', lastMid).addClass('editing');
+						inputEl.val(raw);
+					}
+				});
 			}
 		});
 	};
@@ -258,6 +271,17 @@ define('forum/chats', ['components', 'string', 'sounds', 'forum/infinitescroll',
 		socket.on('event:user_status_change', function(data) {
 			app.updateUserStatus($('.chats-list [data-uid="' + data.uid + '"] [component="user/status"]'), data.status);
 		});
+
+		socket.on('event:chats.edit', function(data) {
+			var message;
+
+			data.messages.forEach(function(message) {
+				body = components.get('chat/message/body', message.messageId);
+				if (body.length) {
+					body.html(message.content);
+				}
+			});
+		});
 	};
 
 	Chats.resizeMainWindow = function() {
@@ -283,7 +307,9 @@ define('forum/chats', ['components', 'string', 'sounds', 'forum/infinitescroll',
 	};
 
 	Chats.sendMessage = function(toUid, inputEl) {
-		var msg = inputEl.val();
+		var msg = inputEl.val(),
+			mid = inputEl.attr('data-mid');
+
 		if (msg.length > config.maximumChatMessageLength) {
 			return app.alertError('[[error:chat-message-too-long]]');
 		}
@@ -293,20 +319,35 @@ define('forum/chats', ['components', 'string', 'sounds', 'forum/infinitescroll',
 		}
 
 		inputEl.val('');
-		socket.emit('modules.chats.send', {
-			touid: toUid,
-			message: msg
-		}, function(err) {
-			if (err) {
-				if (err.message === '[[error:email-not-confirmed-chat]]') {
-					return app.showEmailConfirmWarning(err);
-				}
-				return app.alertError(err.message);
-			}
+		inputEl.removeAttr('data-mid');
 
-			sounds.play('chat-outgoing');
-			Chats.notifyTyping(toUid, false);
-		});
+		if (!mid) {
+			socket.emit('modules.chats.send', {
+				touid: toUid,
+				message: msg
+			}, function(err) {
+				if (err) {
+					if (err.message === '[[error:email-not-confirmed-chat]]') {
+						return app.showEmailConfirmWarning(err);
+					}
+					return app.alertError(err.message);
+				}
+
+				sounds.play('chat-outgoing');
+				Chats.notifyTyping(toUid, false);
+			});
+		} else {
+			socket.emit('modules.chats.edit', {
+				mid: mid,
+				message: msg
+			}, function(err) {
+				if (err) {
+					return app.alertError(err.message);
+				}
+
+				Chats.notifyTyping(toUid, false);
+			});
+		}
 	};
 
 	Chats.scrollToBottom = function(containerEl) {
