@@ -95,6 +95,11 @@ define('forum/chats', ['components', 'string', 'sounds', 'forum/infinitescroll',
 
 			$('[component="chat/input"]').focus();
 		});
+		Mousetrap.bind('up', function(e) {
+			if (e.target === components.get('chat/input').get(0)) {
+				console.log('derp!');
+			}
+		});
 	};
 
 	Chats.addSinceHandler = function(toUid, chatContentEl, sinceEl) {
