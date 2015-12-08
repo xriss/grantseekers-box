@@ -108,7 +108,10 @@ var db = require('./database'),
 
 	Messaging.editMessage = function(mid, content, callback) {
 		async.series([
-			async.apply(Messaging.setMessageField, mid, 'content', content),
+			async.apply(Messaging.setMessageFields, mid, {
+				content: content,
+				edited: Date.now()
+			}),
 			function(next) {
 				Messaging.getMessageFields(mid, ['fromuid', 'touid'], function(err, data) {
 					getMessages([mid], data.fromuid, data.touid, true, function(err, messages) {
@@ -136,6 +139,10 @@ var db = require('./database'),
 
 	Messaging.setMessageField = function(mid, field, content, callback) {
 		db.setObjectField('message:' + mid, field, content, callback);
+	};
+
+	Messaging.setMessageFields = function(mid, data, callback) {
+		db.setObject('message:' + mid, data, callback);
 	};
 
 	Messaging.getMessages = function(params, callback) {
@@ -205,6 +212,10 @@ var db = require('./database'),
 						message.timestampISO = utils.toISOString(message.timestamp);
 						message.self = self ? 1 : 0;
 						message.newSet = false;
+
+						if (message.hasOwnProperty('edited')) {
+							message.editedISO = new Date(parseInt(message.edited, 10)).toISOString();
+						}
 
 						Messaging.parse(message.content, message.fromuid, fromuid, userData[1], userData[0], isNew, function(result) {
 							message.content = result;
