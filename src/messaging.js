@@ -160,7 +160,12 @@ var db = require('./database'),
 			async.waterfall([
 				async.apply(db.getObjects, keys),
 				function(messages, next) {
-					messages = messages.filter(Boolean);
+					messages = messages.map(function(msg, idx) {
+						if (msg) {
+							msg.messageId = parseInt(mids[idx], 10);
+						}
+						return msg;
+					}).filter(Boolean);
 					async.map(messages, function(message, next) {
 						var self = parseInt(message.fromuid, 10) === parseInt(fromuid, 10);
 						message.fromUser = self ? userData[0] : userData[1];
