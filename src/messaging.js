@@ -127,6 +127,30 @@ var db = require('./database'),
 		]);
 	}
 
+	Messaging.deleteMessage = function(mid, callback) {
+		var uids = [];
+		async.series([
+			function(next) {
+				db.getObject('message:' + mid, function(err, messageObj) {
+					messageObj.fromuid = parseInt(messageObj.fromuid, 10);
+					messageObj.touid = parseInt(messageObj.touid, 10);
+					uids.push(messageObj.fromuid, messageObj.touid);
+					uids.sort(function(a, b) {
+						return a > b ? 1 : -1;
+					});
+					next();
+				});
+			},
+			function(next) {
+				next();
+			},
+			function(next) {
+				db.sortedSetRemove('messages:uid:' + uids[0] + ':to:' + uids[1], mid, next)
+			},
+			async.apply(db.delete, 'message:' + mid)
+		], callback);
+	};
+
 	Messaging.getMessageField = function(mid, field, callback) {
 		Messaging.getMessageFields(mid, [field], function(err, fields) {
 			callback(err, fields[field]);

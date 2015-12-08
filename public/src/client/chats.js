@@ -63,10 +63,15 @@ define('forum/chats', ['components', 'string', 'sounds', 'forum/infinitescroll',
 			});
 		});
 
-		components.get('chat/messages').on('click', '[data-action="edit"]', function() {
-			var messageId = $(this).parents('[data-mid]').attr('data-mid');
-			Chats.prepEdit(messageId);
-		});
+		components.get('chat/messages')
+			.on('click', '[data-action="edit"]', function() {
+				var messageId = $(this).parents('[data-mid]').attr('data-mid');
+				Chats.prepEdit(messageId);
+			})
+			.on('click', '[data-action="delete"]', function() {
+				var messageId = $(this).parents('[data-mid]').attr('data-mid');
+				Chats.delete(messageId);
+			});
 
 		$('.recent-chats').on('scroll', function() {
 			var $this = $(this);
@@ -122,6 +127,27 @@ define('forum/chats', ['components', 'string', 'sounds', 'forum/infinitescroll',
 				inputEl.attr('data-mid', messageId).addClass('editing');
 				inputEl.val(raw);
 			}
+		});
+	};
+
+	Chats.delete = function(messageId) {
+		translator.translate('[[modules:chat.delete_message_confirm]]', function(translated) {
+			bootbox.confirm(translated, function(ok) {
+				if (ok) {
+					socket.emit('modules.chats.delete', {
+						messageId: messageId
+					}, function(err) {
+						if (err) {
+							return app.alertError(err.message);
+						}
+
+						// Remove message from list
+						components.get('chat/message', messageId).slideUp('slow', function() {
+							$(this).remove();
+						});
+					});
+				}
+			});
 		});
 	};
 

@@ -84,6 +84,18 @@ SocketModules.chats.edit = function(socket, data, callback) {
 	});
 };
 
+SocketModules.chats.delete = function(socket, data, callback) {
+	if (!data) {
+		return callback(new Error('[[error:invalid-data]]'));
+	}
+
+	Messaging.canEdit(data.messageId, socket.uid, function(err, allowed) {
+		if (allowed) {
+			Messaging.deleteMessage(data.messageId, callback);
+		}
+	});
+}
+
 SocketModules.chats.canMessage = function(socket, toUid, callback) {
 	Messaging.canMessage(socket.uid, toUid, function(err, allowed) {
 		callback(!allowed ? new Error('[[error:chat-restricted]]') : undefined);
