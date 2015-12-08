@@ -63,6 +63,11 @@ define('forum/chats', ['components', 'string', 'sounds', 'forum/infinitescroll',
 			});
 		});
 
+		components.get('chat/messages').on('click', '[data-action="edit"]', function() {
+			var messageId = $(this).parents('[data-mid]').attr('data-mid');
+			Chats.prepEdit(messageId);
+		});
+
 		$('.recent-chats').on('scroll', function() {
 			var $this = $(this);
 			var bottom = ($this[0].scrollHeight - $this.height()) * 0.9;
@@ -99,18 +104,23 @@ define('forum/chats', ['components', 'string', 'sounds', 'forum/infinitescroll',
 			if (e.target === components.get('chat/input').get(0)) {
 				// Retrieve message id from messages list
 				var message = components.get('chat/messages').find('.chat-message[data-self="1"]').last(),
-					lastMid = message.attr('data-mid'),
-					inputEl = components.get('chat/input');
+					lastMid = message.attr('data-mid');
 
-				socket.emit('modules.chats.getRaw', { mid: lastMid }, function(err, raw) {
-					// Populate the input field with the raw message content
-					if (inputEl.val().length === 0) {
-						// By setting the `data-mid` attribute, I tell the chat code that I am editing a
-						// message, instead of posting a new one.
-						inputEl.attr('data-mid', lastMid).addClass('editing');
-						inputEl.val(raw);
-					}
-				});
+				Chats.prepEdit(lastMid);
+			}
+		});
+	};
+
+	Chats.prepEdit = function(messageId) {
+		var inputEl = components.get('chat/input');
+
+		socket.emit('modules.chats.getRaw', { mid: messageId }, function(err, raw) {
+			// Populate the input field with the raw message content
+			if (inputEl.val().length === 0) {
+				// By setting the `data-mid` attribute, I tell the chat code that I am editing a
+				// message, instead of posting a new one.
+				inputEl.attr('data-mid', messageId).addClass('editing');
+				inputEl.val(raw);
 			}
 		});
 	};
