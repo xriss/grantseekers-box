@@ -9,9 +9,9 @@ public/css/*.css
 *.sublime-workspace
 .project
 *.swp
-Vagrantfile
+#Vagrantfile
 .vagrant
-provision.sh
+#provision.sh
 *.komodoproject
 .DS_Store
 feeds/recent.rss
